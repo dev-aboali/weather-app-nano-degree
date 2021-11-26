@@ -16,6 +16,6 @@ npm start
 
 ### Technologies
 
--HTML5
--CSS3
--Express.js
+- HTML5
+- CSS3
+- Express.js
