@@ -43,15 +43,9 @@ generateButton.addEventListener('click', async () => {
             await postData(`${server}/add`, requestBody)
            
             // get the data from the server
-            let data = await getServerData(server + '/get')
+            await getServerData(server + '/get')
 
-            if(data) {
-                loading.innerHTML = ''
-                previewContent.innerHTML  = "Your Feelings today: " + data.feelings;
-                previewDate.innerHTML = "Date: " + data.date;
-                previewTemp.innerHTML = "Temperature: " + data.temperature + " &#8451;";
-            }
-             // rest input fields to receive new entries
+            // rest input fields to receive new entries
                 zipCodeInput.value = '';
                 feelingsInput.value = '';
             
@@ -86,7 +80,12 @@ async function getWeatherApiData(url ,zip, apiKey) {
 async function getServerData(url) {
     let getData = await fetch(url);
     let getResp = await getData.json();
-    return getResp;
+     if(getResp) {
+        loading.innerHTML = ''
+        previewContent.innerHTML  = "Your Feelings today: " + getResp.feelings;
+        previewDate.innerHTML = "Date: " + getResp.date;
+        previewTemp.innerHTML = "Temperature: " + getResp.temperature + " &#8451;";
+    }
 }
 
 async function postData(url, dataObj) {
