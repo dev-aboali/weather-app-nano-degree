@@ -1,6 +1,7 @@
 /* Global Variables */
 const apiKey = 'ed177b3f79c20fa58aa4e4b54c655e38'
 const BASE_URL = 'http://api.openweathermap.org/data/2.5/weather'
+const server = 'http://localhost:3000'
 let zipCodeInput = document.querySelector('#zip');
 let feelingsInput = document.querySelector('#feelings');
 let generateButton = document.getElementById('generate')
@@ -11,7 +12,7 @@ let previewTemp = document.getElementById('temp')
 let previewContent = document.getElementById('content')
 // Create a new date instance dynamically with JS
 let d = new Date();
-let date = d.getMonth()+'.'+ d.getDate()+'.'+ d.getFullYear();
+let date = d.getMonth()+ 1 +'/'+ d.getDate() +'/'+ d.getFullYear();
 
 
 generateButton.addEventListener('click', async () => {
@@ -38,23 +39,19 @@ generateButton.addEventListener('click', async () => {
                 date,
                 feelings
             }
-            // make post request to the server 
-            await fetch('/add', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(requestBody)
-            })
+            // post data to the server
+            await postData(`${server}/add`, requestBody)
+           
             // get the data from the server
-            let data = await getServerData()
+            let data = await getServerData(server + '/get')
+
             if(data) {
                 loading.innerHTML = ''
                 previewContent.innerHTML  = "Your Feelings today: " + data.feelings;
                 previewDate.innerHTML = "Date: " + data.date;
                 previewTemp.innerHTML = "Temperature: " + data.temperature + " &#8451;";
             }
-             // rest input fields to receive new inputs
+             // rest input fields to receive new entries
                 zipCodeInput.value = '';
                 feelingsInput.value = '';
             
@@ -73,12 +70,12 @@ generateButton.addEventListener('click', async () => {
 
 async function getWeatherApiData(url ,zip, apiKey) {
     try {
-        let response = await fetch(`${url}?zip=${zip},US&appid=${apiKey}`)
+        let response = await fetch(`${url}?zip=${zip},US&appid=${apiKey}&units=metric`)
       
             let data =  await response.json()
 
             const { main: { temp } } = data
-            const temperature = Math.round(temp - 273.5)
+            const temperature = Math.round(temp)
             return temperature
         
     } catch (error) {
@@ -86,10 +83,21 @@ async function getWeatherApiData(url ,zip, apiKey) {
     }
 }
 
-async function getServerData() {
-    let getData = await fetch('/get');
+async function getServerData(url) {
+    let getData = await fetch(url);
     let getResp = await getData.json();
     return getResp;
+}
+
+async function postData(url, dataObj) {
+     // make post request to the server 
+    await fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(dataObj)
+    })
 }
 
 
